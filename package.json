@@ -1,33 +1,33 @@
 {
-  "name": "versostat-infra",
-  "version": "0.1.0",
-  "bin": {
-    "versostat-infra": "bin/versostat-infra.js"
-  },
-  "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
-    "test": "jest",
-    "cdk": "cdk",
-    "synth": "cdk synth",
-    "deploy:db": "cdk deploy DatabaseStack",
-    "deploy:net": "cdk deploy NetworkStack",
-    "destroy:db": "cdk destroy DatabaseStack",
-    "destroy:net": "cdk destroy NetworkStack"
-  },
-  "devDependencies": {
-    "@types/jest": "^29.5.14",
-    "@types/node": "22.7.9",
-    "aws-cdk": "2.1025.0",
-    "eslint": "^9.33.0",
-    "jest": "^29.7.0",
-    "prettier": "^3.6.2",
-    "ts-jest": "^29.2.5",
-    "ts-node": "^10.9.2",
-    "typescript": "~5.6.3"
-  },
-  "dependencies": {
-    "aws-cdk-lib": "2.208.0",
-    "constructs": "^10.0.0"
-  }
+    "name": "versostat-infra",
+    "version": "0.1.0",
+    "bin": {
+        "versostat-infra": "bin/versostat-infra.js"
+    },
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w",
+        "test": "jest",
+        "cdk": "cdk",
+        "synth": "cdk synth",
+        "deploy:db": "cdk deploy DatabaseStack",
+        "deploy:net": "cdk deploy NetworkStack",
+        "destroy:db": "cdk destroy DatabaseStack",
+        "destroy:net": "cdk destroy NetworkStack"
+    },
+    "devDependencies": {
+        "@types/jest": "^29.5.14",
+        "@types/node": "22.7.9",
+        "aws-cdk": "2.1025.0",
+        "eslint": "^9.33.0",
+        "jest": "^29.7.0",
+        "prettier": "^3.6.2",
+        "ts-jest": "^29.2.5",
+        "ts-node": "^10.9.2",
+        "typescript": "~5.6.3"
+    },
+    "dependencies": {
+        "aws-cdk-lib": "2.208.0",
+        "constructs": "^10.0.0"
+    }
 }
