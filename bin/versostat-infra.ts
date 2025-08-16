@@ -2,6 +2,7 @@
 import * as cdk from "aws-cdk-lib";
 import { NetworkStack } from "../lib/network-stack";
 import { DatabaseStack } from "../lib/database-stack";
+import { AccessStack } from "../lib/access-stack";
 
 type StageConfig = {
     account: string;
@@ -38,11 +39,20 @@ const net = new NetworkStack(app, "VersoStat-NetworkStack", {
     enableNat: cfg.enableNat,
 });
 
-new DatabaseStack(app, "VersoStat-DatabaseStack", {
+const db = new DatabaseStack(app, "VersoStat-DatabaseStack", {
     env,
     description: `PostgreSQL RDS (${stageKey})`,
     vpc: net.vpc,
     dbCfg: cfg.db,
-    // TODO: will limit inbound to this SG (API tasks can be added to this SG or allowed from theirs)
+    // TODO: Limit inbound to this SG (API tasks can be added to this SG or allowed from theirs)
     appClientSg: net.appClientSg,
-}).addDependency(net);
+});
+db.addDependency(net);
+
+const access = new AccessStack(app, "VersoStat-AccessStack", {
+    env,
+    description: `Bastion for SSM port forwarding (${stageKey})`,
+    vpc: net.vpc,
+    dbSecurityGroup: db.db.connections.securityGroups[0],
+});
+access.addDependency(db);

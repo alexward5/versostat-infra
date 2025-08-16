@@ -12,8 +12,10 @@
         "synth": "cdk synth",
         "deploy:db": "cdk deploy VersoStat-DatabaseStack",
         "deploy:net": "cdk deploy VersoStat-NetworkStack",
+        "deploy:access": "cdk deploy VersoStat-AccessStack",
         "destroy:db": "cdk destroy VersoStat-DatabaseStack",
-        "destroy:net": "cdk destroy VersoStat-NetworkStack"
+        "destroy:net": "cdk destroy VersoStat-NetworkStack",
+        "destroy:access": "cdk destroy VersoStat-AccessStack"
     },
     "devDependencies": {
         "@types/jest": "^29.5.14",
