@@ -10,10 +10,10 @@
         "test": "jest",
         "cdk": "cdk",
         "synth": "cdk synth",
-        "deploy:db": "cdk deploy DatabaseStack",
-        "deploy:net": "cdk deploy NetworkStack",
-        "destroy:db": "cdk destroy DatabaseStack",
-        "destroy:net": "cdk destroy NetworkStack"
+        "deploy:db": "cdk deploy VersoStat-DatabaseStack",
+        "deploy:net": "cdk deploy VersoStat-NetworkStack",
+        "destroy:db": "cdk destroy VersoStat-DatabaseStack",
+        "destroy:net": "cdk destroy VersoStat-NetworkStack"
     },
     "devDependencies": {
         "@types/jest": "^29.5.14",
