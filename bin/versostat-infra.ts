@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 import * as cdk from "aws-cdk-lib";
-import { VersoStatInfraStack } from "../lib/versostat-infra-stack";
-// import { NetworkStack } from '../lib/network-stack';
-// import { DatabaseStack } from '../lib/database-stack';
+import { NetworkStack } from "../lib/network-stack";
+import { DatabaseStack } from "../lib/database-stack";
 
 type StageConfig = {
     account: string;
@@ -22,15 +21,28 @@ type StageConfig = {
 };
 
 const app = new cdk.App();
-new VersoStatInfraStack(app, "VersoStatInfraStack", {
-    /* If you don't specify 'env', this stack will be environment-agnostic.
-     * Account/Region-dependent features and context lookups will not work,
-     * but a single synthesized template can be deployed anywhere. */
-    /* Uncomment the next line to specialize this stack for the AWS Account
-     * and Region that are implied by the current CLI configuration. */
-    // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
-    /* Uncomment the next line if you know exactly what Account and Region you
-     * want to deploy the stack to. */
-    // env: { account: '123456789012', region: 'us-east-1' },
-    /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
+const stageKey = app.node.tryGetContext("stage") ?? "dev";
+const envs = app.node.tryGetContext("envs") as Record<string, StageConfig>;
+const cfg = envs[stageKey];
+
+if (!cfg) {
+    throw new Error(`No context for stage "${stageKey}". Check cdk.json`);
+}
+
+const env = { account: cfg.account, region: cfg.region };
+
+const net = new NetworkStack(app, "VersoStat-NetworkStack", {
+    env,
+    description: `VPC and endpoints (${stageKey})`,
+    vpcCidr: cfg.vpcCidr,
+    enableNat: cfg.enableNat,
 });
+
+new DatabaseStack(app, "VersoStat-DatabaseStack", {
+    env,
+    description: `PostgreSQL RDS (${stageKey})`,
+    vpc: net.vpc,
+    dbCfg: cfg.db,
+    // TODO: will limit inbound to this SG (API tasks can be added to this SG or allowed from theirs)
+    appClientSg: net.appClientSg,
+}).addDependency(net);
