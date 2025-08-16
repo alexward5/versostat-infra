@@ -118,7 +118,7 @@
                     "instanceType": "t4g.small",
                     "multiAz": true,
                     "allocatedStorageGb": 50,
-                    "maxAllocatedStorageGb": 200,
+                    "maxAllocatedStorageGb": 400,
                     "backupRetentionDays": 14,
                     "deletionProtection": true,
                     "publicAccess": false
