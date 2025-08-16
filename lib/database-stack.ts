@@ -95,7 +95,7 @@ export class DatabaseStack extends cdk.Stack {
             databaseName: "versostat_db",
         });
 
-        new cw.Alarm(this, "VersoStat-DbCpuHigh", {
+        new cw.Alarm(this, "VersoStat-DbCpuAlert", {
             metric: this.db.metricCPUUtilization(),
             threshold: 80,
             evaluationPeriods: 3,
@@ -103,7 +103,7 @@ export class DatabaseStack extends cdk.Stack {
             comparisonOperator: cw.ComparisonOperator.GREATER_THAN_THRESHOLD,
         });
 
-        new cw.Alarm(this, "VersoStat-DbFreeStorageLow", {
+        new cw.Alarm(this, "VersoStat-DbFreeStorageAlert", {
             metric: this.db.metricFreeStorageSpace(),
             threshold: 10 * 1024 * 1024 * 1024, // 10 GiB
             evaluationPeriods: 1,
