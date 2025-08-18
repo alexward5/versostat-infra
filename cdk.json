@@ -92,7 +92,7 @@
         "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
 
         "envs": {
-            "dev": {
+            "prod": {
                 "account": "586999013151",
                 "region": "us-east-1",
                 "vpcCidr": "10.20.0.0/16",
@@ -103,28 +103,12 @@
                     "multiAz": false,
                     "allocatedStorageGb": 50,
                     "maxAllocatedStorageGb": 200,
-                    "backupRetentionDays": 7,
-                    "deletionProtection": false,
-                    "publicAccess": false
-                }
-            },
-            "prod": {
-                "account": "586999013151",
-                "region": "us-east-1",
-                "vpcCidr": "10.30.0.0/16",
-                "enableNat": true,
-                "db": {
-                    "engineVersion": "16.3",
-                    "instanceType": "t4g.small",
-                    "multiAz": true,
-                    "allocatedStorageGb": 50,
-                    "maxAllocatedStorageGb": 400,
                     "backupRetentionDays": 14,
-                    "deletionProtection": true,
+                    "deletionProtection": false,
                     "publicAccess": false
                 }
             }
         },
-        "stage": "dev"
+        "stage": "prod"
     }
 }
