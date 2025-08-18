@@ -2,7 +2,7 @@
     "name": "versostat-infra",
     "version": "0.1.0",
     "bin": {
-        "versostat-infra": "bin/versostat-infra.js"
+        "versostat-infra": "bin/versostat-infra.ts"
     },
     "scripts": {
         "build": "tsc",
