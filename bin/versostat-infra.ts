@@ -32,14 +32,14 @@ if (!cfg) {
 
 const env = { account: cfg.account, region: cfg.region };
 
-const net = new NetworkStack(app, "VersoStat-NetworkStack", {
+const net = new NetworkStack(app, `VersoStat-NetworkStack-${stageKey}`, {
     env,
     description: `VPC and endpoints (${stageKey})`,
     vpcCidr: cfg.vpcCidr,
     enableNat: cfg.enableNat,
 });
 
-const db = new DatabaseStack(app, "VersoStat-DatabaseStack", {
+const db = new DatabaseStack(app, `VersoStat-DatabaseStack-${stageKey}`, {
     env,
     description: `PostgreSQL RDS (${stageKey})`,
     vpc: net.vpc,
@@ -49,7 +49,7 @@ const db = new DatabaseStack(app, "VersoStat-DatabaseStack", {
 });
 db.addDependency(net);
 
-const access = new AccessStack(app, "VersoStat-AccessStack", {
+const access = new AccessStack(app, `VersoStat-AccessStack-${stageKey}`, {
     env,
     description: `Bastion for SSM port forwarding (${stageKey})`,
     vpc: net.vpc,
