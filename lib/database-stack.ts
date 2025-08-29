@@ -110,17 +110,24 @@ export class DatabaseStack extends cdk.Stack {
             comparisonOperator: cw.ComparisonOperator.LESS_THAN_THRESHOLD,
         });
 
-        new cdk.CfnOutput(this, "VersoStat-DbEndpoint", {
+        new cdk.CfnOutput(this, "VersoStat-DbHost", {
             value: this.db.instanceEndpoint.hostname,
+            exportName: "VersoStat-DbHost",
         });
+
         new cdk.CfnOutput(this, "VersoStat-DbPort", {
             value: String(this.db.instanceEndpoint.port),
+            exportName: "VersoStat-DbPort",
         });
+
         new cdk.CfnOutput(this, "VersoStat-DbSecretArn", {
-            value: secret.secretArn,
+            value: this.secret.secretArn,
+            exportName: "VersoStat-DbSecretArn",
         });
+
         new cdk.CfnOutput(this, "VersoStat-DbSecurityGroupId", {
-            value: dbSg.securityGroupId,
+            value: this.db.connections.securityGroups[0].securityGroupId,
+            exportName: "VersoStat-DbSecurityGroupId",
         });
     }
 }

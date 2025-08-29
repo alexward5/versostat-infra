@@ -63,12 +63,38 @@ export class NetworkStack extends cdk.Stack {
             });
         });
 
-        new cdk.CfnOutput(this, "VersoStat-VpcId", { value: this.vpc.vpcId });
+        new cdk.CfnOutput(this, "VersoStat-VpcId", {
+            value: this.vpc.vpcId,
+            exportName: "VersoStat-VpcId",
+        });
+
         new cdk.CfnOutput(this, "VersoStat-PrivateSubnetIds", {
             value: this.vpc.privateSubnets.map((s) => s.subnetId).join(","),
+            exportName: "VersoStat-PrivateSubnetIds",
         });
-        new cdk.CfnOutput(this, "VersoStat-AppClientSecurityGroupId", {
-            value: this.appClientSg.securityGroupId,
+
+        new cdk.CfnOutput(this, "VersoStat-PublicSubnetIds", {
+            value: this.vpc.publicSubnets.map((s) => s.subnetId).join(","),
+            exportName: "VersoStat-PublicSubnetIds",
+        });
+
+        new cdk.CfnOutput(this, "VersoStat-PrivateSubnetRouteTableIds", {
+            value: this.vpc.privateSubnets
+                .map((s) => s.routeTable.routeTableId)
+                .join(","),
+            exportName: "VersoStat-PrivateSubnetRouteTableIds",
+        });
+
+        new cdk.CfnOutput(this, "VersoStat-PublicSubnetRouteTableIds", {
+            value: this.vpc.publicSubnets
+                .map((s) => s.routeTable.routeTableId)
+                .join(","),
+            exportName: "VersoStat-PublicSubnetRouteTableIds",
+        });
+
+        new cdk.CfnOutput(this, "VersoStat-AvailabilityZones", {
+            value: this.vpc.availabilityZones.join(","),
+            exportName: "VersoStat-AvailabilityZones",
         });
     }
 }
