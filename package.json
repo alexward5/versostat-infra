@@ -13,9 +13,11 @@
         "deploy:db": "cdk deploy VersoStat-DatabaseStack-prod",
         "deploy:net": "cdk deploy VersoStat-NetworkStack-prod",
         "deploy:access": "cdk deploy VersoStat-AccessStack-prod",
+        "deploy:api": "cdk deploy VersoStat-ApiPlatformStack-prod",
         "destroy:db": "cdk destroy VersoStat-DatabaseStack-prod",
         "destroy:net": "cdk destroy VersoStat-NetworkStack-prod",
         "destroy:access": "cdk destroy VersoStat-AccessStack-prod",
+        "destroy:api": "cdk destroy VersoStat-ApiPlatformStack-prod",
         "db:tunnel": "ts-node scripts/db-tunnel.ts --region us-east-1 --access-stack VersoStat-AccessStack-prod --db-stack VersoStat-DatabaseStack-prod --local-port 5439"
     },
     "devDependencies": {

@@ -3,6 +3,7 @@ import * as cdk from "aws-cdk-lib";
 import { NetworkStack } from "../lib/network-stack";
 import { DatabaseStack } from "../lib/database-stack";
 import { AccessStack } from "../lib/access-stack";
+import { ApiPlatformStack } from "../lib/api-stack";
 
 type StageConfig = {
     account: string;
@@ -56,3 +57,9 @@ const access = new AccessStack(app, `VersoStat-AccessStack-${stageKey}`, {
     dbSecurityGroup: db.db.connections.securityGroups[0],
 });
 access.addDependency(db);
+
+new ApiPlatformStack(app, `VersoStat-ApiPlatformStack-${stageKey}`, {
+    env,
+    vpc: net.vpc,
+    ecrRepoName: "versostat-api",
+});
