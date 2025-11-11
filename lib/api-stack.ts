@@ -6,6 +6,9 @@ import {
     aws_ecs as ecs,
     aws_elasticloadbalancingv2 as elbv2,
     aws_logs as logs,
+    aws_certificatemanager as acm,
+    aws_route53 as route53,
+    aws_route53_targets as r53Targets,
 } from "aws-cdk-lib";
 
 type Props = cdk.StackProps & {
@@ -71,6 +74,13 @@ export class ApiPlatformStack extends cdk.Stack {
             "Allow HTTP",
         );
 
+        // Allow HTTPS 443 on ALB SG
+        albSg.addIngressRule(
+            ec2.Peer.anyIpv4(),
+            ec2.Port.tcp(443),
+            "Allow HTTPS",
+        );
+
         this.taskSg.addIngressRule(
             albSg,
             ec2.Port.tcp(4000),
@@ -94,6 +104,49 @@ export class ApiPlatformStack extends cdk.Stack {
                 messageBody:
                     "VersoStat API platform is up. Service not attached yet.",
             }),
+        });
+
+        // Lookup public hosted zone (Route 53 must be authoritative for versostat.com)
+        const zone = route53.HostedZone.fromLookup(this, "ApiZone", {
+            domainName: "versostat.com",
+        });
+
+        // ACM certificate for api.versostat.com (same region as ALB)
+        const apiCert = new acm.Certificate(this, "ApiCert", {
+            domainName: "api.versostat.com",
+            validation: acm.CertificateValidation.fromDns(zone),
+        });
+
+        // HTTPS listener on ALB (TLS terminates here)
+        const httpsListener = new elbv2.ApplicationListener(
+            this,
+            "HttpsListener",
+            {
+                loadBalancer: this.alb,
+                port: 443,
+                protocol: elbv2.ApplicationProtocol.HTTPS,
+                certificates: [apiCert],
+                defaultAction: elbv2.ListenerAction.fixedResponse(404, {
+                    messageBody: "Not Found",
+                }),
+                open: true,
+            },
+        );
+
+        // DNS: api.versostat.com -> ALB
+        new route53.ARecord(this, "ApiAliasA", {
+            zone,
+            recordName: "api",
+            target: route53.RecordTarget.fromAlias(
+                new r53Targets.LoadBalancerTarget(this.alb),
+            ),
+        });
+        new route53.AaaaRecord(this, "ApiAliasAAAA", {
+            zone,
+            recordName: "api",
+            target: route53.RecordTarget.fromAlias(
+                new r53Targets.LoadBalancerTarget(this.alb),
+            ),
         });
 
         new cdk.CfnOutput(this, "VersoStat-ClusterName", {
@@ -126,9 +179,19 @@ export class ApiPlatformStack extends cdk.Stack {
             exportName: "VersoStat-HttpListenerArn",
         });
 
+        new cdk.CfnOutput(this, "HttpsListenerArn", {
+            value: httpsListener.listenerArn,
+            exportName: "VersoStat-HttpsListenerArn",
+        });
+
         new cdk.CfnOutput(this, "VersoStat-EcrRepositoryUri", {
             value: this.ecrRepo.repositoryUri,
             exportName: "VersoStat-EcrRepositoryUri",
+        });
+
+        new cdk.CfnOutput(this, "VersoStat-AlbFullName", {
+            value: this.alb.loadBalancerFullName,
+            exportName: "VersoStat-AlbFullName",
         });
     }
 }
