@@ -76,8 +76,8 @@ async function main() {
         cf,
         accessStack,
         "VersoStatBastionInstanceId",
-    ); // from AccessStack
-    const dbEndpoint = await getStackOutput(cf, dbStack, "VersoStatDbEndpoint"); // from DatabaseStack
+    );
+    const dbEndpoint = await getStackOutput(cf, dbStack, "VersoStatDbHost");
 
     console.log("=== SSM Port Forward Parameters ===");
     console.log(`Region:         ${region}`);
