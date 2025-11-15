@@ -9,5 +9,9 @@
   ],
   "acknowledged-issue-numbers": [
     34892
-  ]
+  ],
+  "hosted-zone:account=586999013151:domainName=versostat.com:region=us-east-1": {
+    "Id": "/hostedzone/Z04948362ICTE30RGK2XN",
+    "Name": "versostat.com."
+  }
 }
