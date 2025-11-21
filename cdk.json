@@ -96,7 +96,7 @@
                 "account": "586999013151",
                 "region": "us-east-1",
                 "vpcCidr": "10.20.0.0/16",
-                "enableNat": true,
+                "enableNat": false,
                 "db": {
                     "engineVersion": "16.3",
                     "instanceType": "t4g.small",
