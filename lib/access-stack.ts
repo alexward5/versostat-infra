@@ -28,6 +28,10 @@ export class AccessStack extends cdk.Stack {
             subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
             securityGroup: this.bastionSg,
             machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+            instanceType: ec2.InstanceType.of(
+                ec2.InstanceClass.T3,
+                ec2.InstanceSize.NANO,
+            ),
         });
 
         // Egress rule to allow the bastion to connect to the database
@@ -44,7 +48,7 @@ export class AccessStack extends cdk.Stack {
             ),
         );
 
-        new cdk.CfnOutput(this, "VersoStat-BastionInstanceId", {
+        new cdk.CfnOutput(this, "VersoStatBastionInstanceId", {
             value: this.bastion.instance.instanceId,
         });
     }
