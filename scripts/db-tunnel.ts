@@ -29,7 +29,7 @@ import {
     StopInstancesCommand,
     InstanceStateName,
 } from "@aws-sdk/client-ec2";
-import { spawn } from "child_process";
+import { ChildProcess, spawn } from "child_process";
 
 type Args = {
     region: string;
@@ -37,6 +37,10 @@ type Args = {
     dbStack: string;
     localPort: number;
 };
+
+let ec2Global: EC2Client | undefined;
+let bastionIdGlobal: string | undefined;
+let childGlobal: ChildProcess | undefined;
 
 function parseArgs(): Args {
     const args = process.argv.slice(2);
@@ -104,7 +108,7 @@ async function ensureInstanceRunning(
         console.log(`Current bastion state: ${state}`);
 
         if (state === "running") {
-            console.log(`Bastion ${instanceId} is already running.`);
+            console.log(`Bastion ${instanceId} is running.`);
             return;
         }
 
@@ -150,6 +154,41 @@ async function stopInstance(ec2: EC2Client, instanceId: string): Promise<void> {
     await ec2.send(new StopInstancesCommand({ InstanceIds: [instanceId] }));
 }
 
+async function cleanupAndExit(code: number) {
+    if (childGlobal && !childGlobal.killed) {
+        try {
+            childGlobal.kill("SIGINT");
+        } catch {
+            // ignore
+        }
+    }
+
+    if (ec2Global && bastionIdGlobal) {
+        try {
+            console.log("\nStopping bastion before exit...");
+            await stopInstance(ec2Global, bastionIdGlobal);
+            console.log("Bastion stopped.");
+        } catch (e) {
+            console.error("Failed to stop bastion:", e);
+        }
+    }
+    process.exit(code);
+}
+
+process.on("SIGTERM", () => {
+    void cleanupAndExit(143);
+});
+
+process.on("SIGINT", () => {
+    // Ctrl+C
+    void cleanupAndExit(130);
+});
+
+process.on("SIGTSTP", () => {
+    // Ctrl+Z
+    void cleanupAndExit(148);
+});
+
 async function main() {
     const { region, accessStack, dbStack, localPort } = parseArgs();
     const cf = new CloudFormationClient({ region });
@@ -161,6 +200,10 @@ async function main() {
         accessStack,
         "VersoStatBastionInstanceId",
     );
+
+    ec2Global = ec2;
+    bastionIdGlobal = bastionId;
+
     const dbEndpoint = await getStackOutput(cf, dbStack, "VersoStatDbHost");
 
     await ensureInstanceRunning(ec2, bastionId);
@@ -196,6 +239,8 @@ async function main() {
         ],
         { stdio: "inherit" },
     );
+
+    childGlobal = child;
 
     child.on("exit", async (code) => {
         console.log(`\nSSM session exited with code ${code}`);
