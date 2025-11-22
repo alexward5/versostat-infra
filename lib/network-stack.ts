@@ -30,6 +30,12 @@ export class NetworkStack extends cdk.Stack {
             ],
         });
 
+        // S3 gateway endpoint for private subnets (needed for ECR pulls without NAT)
+        this.vpc.addGatewayEndpoint("VersoStat-S3Endpoint", {
+            service: ec2.GatewayVpcEndpointAwsService.S3,
+            subnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
+        });
+
         // SG for application/ECS tasks
         this.appClientSg = new ec2.SecurityGroup(
             this,
@@ -66,6 +72,11 @@ export class NetworkStack extends cdk.Stack {
         new cdk.CfnOutput(this, "VersoStat-VpcId", {
             value: this.vpc.vpcId,
             exportName: "VersoStat-VpcId",
+        });
+
+        new cdk.CfnOutput(this, "VersoStat-AppClientSecurityGroupId", {
+            value: this.appClientSg.securityGroupId,
+            exportName: "VersoStat-AppClientSecurityGroupId",
         });
 
         new cdk.CfnOutput(this, "VersoStat-PrivateSubnetIds", {
