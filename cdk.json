@@ -99,12 +99,12 @@
                 "enableNat": false,
                 "db": {
                     "engineVersion": "16.3",
-                    "instanceType": "t4g.small",
+                    "instanceType": "t4g.micro",
                     "multiAz": false,
-                    "allocatedStorageGb": 50,
-                    "maxAllocatedStorageGb": 200,
-                    "backupRetentionDays": 14,
-                    "deletionProtection": false,
+                    "allocatedStorageGb": 20,
+                    "maxAllocatedStorageGb": 100,
+                    "backupRetentionDays": 7,
+                    "deletionProtection": true,
                     "publicAccess": false
                 }
             }
