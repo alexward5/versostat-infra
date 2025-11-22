@@ -53,6 +53,16 @@ export class ApiPlatformStack extends cdk.Stack {
             allowAllOutbound: true,
         });
 
+        const appClientSgId = cdk.Fn.importValue(
+            "VersoStat-AppClientSecurityGroupId",
+        );
+
+        const appClientSg = ec2.SecurityGroup.fromSecurityGroupId(
+            this,
+            "AppClientSg",
+            appClientSgId,
+        );
+
         const albSg = new ec2.SecurityGroup(this, "VersoStat-ApiAlbSg", {
             vpc,
             description: "SG for public ALB",
@@ -92,6 +102,13 @@ export class ApiPlatformStack extends cdk.Stack {
             ec2.Peer.anyIpv4(),
             ec2.Port.tcp(80),
             "Allow HTTP",
+        );
+
+        // Allow ECS tasks to reach VPC interface endpoints (ECR, SSM, etc.) on 443
+        appClientSg.addIngressRule(
+            this.taskSg,
+            ec2.Port.tcp(443),
+            "Allow ECS tasks to reach interface endpoints on 443",
         );
 
         // HTTP listener w/ placeholder default action (service will add its own listener)
