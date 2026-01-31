@@ -4,6 +4,7 @@ import { NetworkStack } from "../lib/network-stack";
 import { DatabaseStack } from "../lib/database-stack";
 import { AccessStack } from "../lib/access-stack";
 import { ApiPlatformStack } from "../lib/api-stack";
+import { ScraperPlatformStack } from "../lib/scraper-platform-stack";
 
 type StageConfig = {
     account: string;
@@ -58,8 +59,19 @@ const access = new AccessStack(app, `VersoStat-AccessStack-${stageKey}`, {
 });
 access.addDependency(db);
 
-new ApiPlatformStack(app, `VersoStat-ApiPlatformStack-${stageKey}`, {
+const apiPlatform = new ApiPlatformStack(
+    app,
+    `VersoStat-ApiPlatformStack-${stageKey}`,
+    {
+        env,
+        vpc: net.vpc,
+        ecrRepoName: "versostat-api",
+    }
+);
+apiPlatform.addDependency(net);
+
+new ScraperPlatformStack(app, `VersoStat-ScraperPlatformStack-${stageKey}`, {
     env,
     vpc: net.vpc,
-    ecrRepoName: "versostat-api",
-});
+    appClientSg: net.appClientSg,
+}).addDependency(net);
