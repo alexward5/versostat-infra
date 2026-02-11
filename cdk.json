@@ -99,7 +99,7 @@
                 "enableNat": false,
                 "db": {
                     "engineVersion": "16.3",
-                    "instanceType": "t4g.micro",
+                    "instanceType": "t4g.small",
                     "multiAz": false,
                     "allocatedStorageGb": 20,
                     "maxAllocatedStorageGb": 100,
